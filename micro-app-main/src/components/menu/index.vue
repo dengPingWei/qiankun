@@ -6,12 +6,17 @@
           <a-icon v-if="item.icon" :type="item.icon" />
           <span>{{item.title}}</span>
         </router-link>
+        <!-- <div>
+          <a-icon v-if="item.icon" :type="item.icon" />
+          <span>{{item.title}}</span>
+        </div> -->
       </a-menu-item>
     </a-menu>
   </section>
 </template>
 
 <script lang="ts">
+import shared from "@/shared";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
 type MenuItem = {
@@ -19,6 +24,7 @@ type MenuItem = {
   title: string;
   icon?: string;
   path: string;
+  isMicro?: boolean;
   children?: MenuItem[];
 };
 
@@ -70,8 +76,13 @@ export default class Menu extends Vue {
    * 切换菜单
    */
   private changeMenu(item: MenuItem) {
-    const { key } = item;
+    const { key, path } = item;
     this.selectKey = key;
+    if (path !== '/') {
+      shared.setAddHeaderNav(item)
+      this.$emit('setFtameDomList');
+    }
+     
   }
 }
 </script>

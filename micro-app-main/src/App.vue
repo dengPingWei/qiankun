@@ -12,7 +12,7 @@
       >
         <!-- 左侧导航 -->
         <section class="cns-menu-left-wrapper">
-          <main-menu :menus="menus" />
+          <main-menu :menus="menus" @setFtameDomList="setFtameDomList"/>
         </section>
         <!-- 悬浮导航 -->
         <!-- <section class="cns-menu-wrapper">
@@ -22,7 +22,10 @@
           <!-- 主应用渲染区，用于挂载主应用路由触发的组件 -->
           <router-view v-show="$route.name" />
           <!-- 子应用渲染区，用于挂载子应用节点 -->
-          <section v-show="!$route.name" id="frame"></section>
+          <section v-show="!$route.name" id="frame">
+            <!-- <section id="VueMicroApp"></section> -->
+            <section v-for="item in ftameDomList" :key="item.key" :id="item.key"></section>
+          </section>
         </section>
       </section>
       <section v-if="footerShow" class="cns-footer-wrapper">底部</section>
@@ -31,8 +34,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
 import axios from "axios";
+import shared from "@/shared";
+import { Component, Vue, Watch } from "vue-property-decorator";
 
 import MainMenu from "@/components/menu/index.vue";
 import HeaderMenu from "@/components/header/index.vue";
@@ -54,26 +58,22 @@ export default class App extends Vue {
       key: "Home",
       title: "主页",
       path: "/",
+      isMicro: true
     },
     {
       key: "VueMicroApp",
       title: "子应用一",
       path: "/vue",
     },
-    {
-      key: "VueMicroAppList",
-      title: "子应用二",
-      path: "/vue/list",
-    },
+//     {
+//       key: "VueMicroAppList",
+//       title: "子应用二",
+//       path: "/vue/list",
+//     },
     {
       key: "ReactMicroApp",
       title: "子应用三",
       path: "/react",
-    },
-    {
-      key: "ReactMicroAppList",
-      title: "子应用三list",
-      path: "/react/list",
     },
     {
       key: "AngularMicroApp",
@@ -91,6 +91,15 @@ export default class App extends Vue {
       path: "/static",
     },
   ];
+  @Watch("$route.path")
+  onPathChange() {
+    // setTimeout(() => {
+    //   this.ftameDomList = shared.getHeaderNav()
+    //   console.log('appppppppp', shared.getHeaderNav())
+    // }, 0)
+  }
+  // dom
+  ftameDomList = [];
   // 判断是否有底部数据
   footerShow: Boolean = true;
   navBarType:String = 'fixed'
@@ -103,6 +112,23 @@ export default class App extends Vue {
       this.navBarType = navBarType
       
     })
+    if (!this.$route.name) {
+      for (let i = 0; i < this.menus.length; i++) {
+        const menu = this.menus[i];
+        const { path } = menu;
+        if (path === this.$route.path) {
+          shared.setAddHeaderNav(menu)
+          this.ftameDomList = shared.getHeaderNav()
+          break
+        }
+      }
+    }
+  }
+  private setFtameDomList(
+    menus: []
+  ): void {
+    console.log('okokoko')
+    this.ftameDomList = menus
   }
 }
 </script>
@@ -159,25 +185,10 @@ export default class App extends Vue {
     background: linear-gradient(-90deg, #4e92f5, #3469c6);
     overflow: hidden;
   }
-
-  // .cns-menu-wrapper {
-  //   position: fixed;
-  //   left: 0;
-  //   top: 40px;
-  //   bottom: 0;
-  //   z-index: 40;
-  //   width: 172px;
-  //   overflow-x: hidden;
-  //   overflow-y: auto;
-  // }
-  // .cns-nav-wrapper {
-  //   position: fixed;
-  //   width: 100%;
-  //   min-width: 1060px;
-  //   padding-left: 172px;
-  //   left: 0;
-  //   top: 0;
-  //   z-index: 30;
-  // }
+  #frame {
+    width: 100%;
+    height: 100%;
+    background: rgb(196, 188, 188);
+  }
 }
 </style>

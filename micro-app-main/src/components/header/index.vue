@@ -6,13 +6,23 @@
     <div class="logo">
       <img src="../../assets/oes-logo-v6-dark.png" alt="">
     </div>
-    <div class="header-nav"></div>
+    <div class="header-nav">
+        <div v-for="(item, index) in menus" :key="item.key" class="heade-nav-item" @click="changeMenu(item)">
+          <div class="option-container">
+            <span @click.stop="deleteMenu(index, item)">×</span>
+          </div>
+          <router-link :to="{path: item.path }">
+            <span class="nav-name" :class="{ 'nav-name-active ': selectKey === item.key }">{{item.title}}</span>
+          </router-link>
+        </div>
+    </div>
     <div class="header-right"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import shared from "@/shared";
+import { Component, Vue, Watch } from "vue-property-decorator";
 
 type MenuItem = {
   key: string;
@@ -21,29 +31,34 @@ type MenuItem = {
   path: string;
   children?: MenuItem[];
 };
-
-@Component
-export default class Menu extends Vue {
-  @Prop({ type: Array, default: [] })
-  menus!: MenuItem[];
-
+@Component({
+  components: {
+    HeaderMenu
+  }
+})
+export default class HeaderMenu extends Vue {
   @Watch("$route.path")
   onPathChange() {
-    this._initMenus();
+    setTimeout(() => {
+      this.menus = shared.getHeaderNav()
+      this._initMenus()
+    }, 100)
   }
-
   selectKey: string = "";
-
+  menus: MenuItem[] = []
   created() {
-    this._initMenus();
+    this.menus = shared.getHeaderNav()
+    this._initMenus()
   }
-
   private _initMenus() {
     const currentMenu = this._findCurrentMenu(
       this.menus,
       this.$route.path
     ) as MenuItem;
-    if (!currentMenu) return;
+    if (!currentMenu) {
+      this.selectKey = ''
+      return
+    }
     const { key } = currentMenu;
     this.selectKey = key;
   }
@@ -70,8 +85,27 @@ export default class Menu extends Vue {
    * 切换菜单
    */
   private changeMenu(item: MenuItem) {
-    const { key } = item;
-    this.selectKey = key;
+    const { key } = item
+    this.selectKey = key
+  }
+  /**
+   * 删除菜单
+   */
+  private deleteMenu(index: number, item: MenuItem) {
+    let headerNav = [ ...shared.getHeaderNav() ]
+    console.log(headerNav)
+    if (item.key ===this.selectKey) {
+      if(headerNav[index + 1]) {
+        this.$router.push(headerNav[index + 1].path)
+      } else if(headerNav[index - 1]) {
+        this.$router.push(headerNav[index - 1].path)
+      } else {
+        this.$router.push('/')
+      }
+    }
+    headerNav.splice(index, 1)
+    shared.setHeaderNav(headerNav)
+    this.menus = headerNav
   }
 }
 </script>
@@ -104,12 +138,48 @@ export default class Menu extends Vue {
   }
   .header-nav {
     flex: 1;
-    // background: #0f0; 
-  } 
+    padding: 0 10px;
+    padding-bottom: 10px;
+    font-size: 14px;
+    .heade-nav-item {
+      position: relative;
+      float: left;
+      padding: 0 8px;
+      padding-top: 14px;
+      .option-container {
+        display: none;
+        position: absolute;
+        top: 4px;
+        right: 8px;
+        height: 12px;
+        line-height: 10px;
+        cursor: pointer;
+        span {
+          width: 10px;
+          height: 10px;
+        }
+      }
+      a {
+        color: #fff;
+        text-decoration:none;
+      }
+      .nav-name {
+        padding-bottom: 2px;
+        border-bottom: 2px solid transparent;
+      }
+      .nav-name-active {
+        border-bottom: 2px solid #fff;
+      }
+    }
+    .heade-nav-item:hover .option-container {
+      display: block;
+    }
+  }
+  
   .header-right {
     width: 300px;
     // height: 100%;
-    // background: #332; 
+    background: #332; 
   }
 }
 </style>

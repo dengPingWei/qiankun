@@ -9,7 +9,7 @@ type Action = {
   payload: any;
 };
 
-const reducer = (state: State = {}, action: Action): State => {
+const reducer = (state: State = {}, action: Action = []): State => {
   switch (action.type) {
     default:
       return state;
@@ -19,6 +19,12 @@ const reducer = (state: State = {}, action: Action): State => {
         ...state,
         token: action.payload,
       };
+    case "SET_HEADER_NAV":
+      return {
+        ...state,
+        headerNavList: action.payload,
+      };
+      
   }
 };
 

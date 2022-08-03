@@ -7,7 +7,7 @@ const {
   ANGULAR_MICRO_APP,
   STATIC_MICRO_APP,
 } = config;
-
+console.log('apps====================')
 const apps = [
   /**
    * name: 微应用名称 - 具有唯一性
@@ -18,13 +18,13 @@ const apps = [
   {
     name: "ReactMicroApp",
     entry: REACT_MICRO_APP,
-    container: "#frame",
+    container: "#ReactMicroApp",
     activeRule: "/react",
   },
   {
     name: "VueMicroApp",
     entry: VUE_MICRO_APP,
-    container: "#frame",
+    container: "#VueMicroApp",
     activeRule: "/vue",
   },
   {
