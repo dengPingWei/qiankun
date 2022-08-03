@@ -11,6 +11,5 @@ const config: Config = {
   ANGULAR_MICRO_APP: process.env.VUE_APP_ANGULAR_MICRO_APP,
   STATIC_MICRO_APP: process.env.VUE_APP_STATIC_MICRO_APP,
 }
-
 // 导出当前环境的配置，默认为 dev 环境
 export default config;

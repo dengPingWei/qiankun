@@ -15601,7 +15601,7 @@ textarea.cns-pagination-options-quick-jumper input {
 .cns-menu-vertical-right .cns-menu-submenu-title,
 .cns-menu-inline .cns-menu-submenu-title {
   height: 40px;
-  margin-top: 4px;
+  /* margin-top: 4px; */
   margin-bottom: 4px;
   padding: 0 16px;
   overflow: hidden;
