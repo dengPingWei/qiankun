@@ -1,6 +1,6 @@
 <template>
   <section class="cns-main-menu">
-    <a-menu mode="inline" theme="dark" :selectedKeys="[selectKey]">
+    <a-menu mode="inline" theme="dark" :selectedKeys="[selectKey]" style='background:linear-gradient(-90deg, #4e92f5, #3469c6)'>
       <a-menu-item v-for="item in menus" :key="item.key" @click="changeMenu(item)">
         <router-link :to="{path: item.path }">
           <a-icon v-if="item.icon" :type="item.icon" />
@@ -80,7 +80,8 @@ export default class Menu extends Vue {
 .cns-main-menu {
   width: 100%;
   height: 100%;
-  background: #001529;
+   background: -webkit-gradient(linear, right top, left top, from(#4e92f5), to(#3469c6));
+    background: linear-gradient(-90deg, #4e92f5, #3469c6);
   .cns-menu {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;

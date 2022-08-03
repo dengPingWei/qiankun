@@ -1,0 +1,2 @@
+navBarType：导航栏是侧边固定导航栏还是想oes6的隐藏导航栏 默认值fixed 隐藏导航栏 hidden
+footerShow:  potal底部横条是否显示    Boolean值  默认false

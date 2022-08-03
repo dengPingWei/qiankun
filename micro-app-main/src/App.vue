@@ -4,7 +4,12 @@
       <section class="cns-header-wrapper">
         <header-menu :menus="menus"></header-menu>
       </section>
-      <section :class="['cns-content-wrapper', {'cns-content-wrapper-footer':footerShow} ]">
+      <section
+        :class="[
+          'cns-content-wrapper',
+          { 'cns-content-wrapper-footer': footerShow },
+        ]"
+      >
         <!-- 左侧导航 -->
         <section class="cns-menu-left-wrapper">
           <main-menu :menus="menus" />
@@ -20,23 +25,22 @@
           <section v-show="!$route.name" id="frame"></section>
         </section>
       </section>
-      <section v-if="footerShow" class="cns-footer-wrapper">
-        底部
-      </section>
+      <section v-if="footerShow" class="cns-footer-wrapper">底部</section>
     </section>
   </a-config-provider>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import axios from "axios";
 
 import MainMenu from "@/components/menu/index.vue";
 import HeaderMenu from "@/components/header/index.vue";
 @Component({
   components: {
     MainMenu,
-    HeaderMenu
-  }
+    HeaderMenu,
+  },
 })
 export default class App extends Vue {
   /**
@@ -49,46 +53,57 @@ export default class App extends Vue {
     {
       key: "Home",
       title: "主页",
-      path: "/"
+      path: "/",
     },
     {
       key: "VueMicroApp",
-      title: "Vue 主页",
-      path: "/vue"
+      title: "子应用一",
+      path: "/vue",
     },
     {
       key: "VueMicroAppList",
-      title: "Vue 列表页",
-      path: "/vue/list"
+      title: "子应用二",
+      path: "/vue/list",
     },
     {
       key: "ReactMicroApp",
-      title: "React 主页",
-      path: "/react"
+      title: "子应用三",
+      path: "/react",
     },
     {
       key: "ReactMicroAppList",
-      title: "React 列表页",
-      path: "/react/list"
+      title: "子应用三list",
+      path: "/react/list",
     },
     {
       key: "AngularMicroApp",
-      title: "Angular 主页",
-      path: "/angular"
+      title: "子应用四",
+      path: "/angular",
     },
     {
       key: "AngularMicroAppList",
-      title: "Angular 列表页",
-      path: "/angular/list"
+      title: "子应用四List",
+      path: "/angular/list",
     },
     {
       key: "StaticMicroApp",
-      title: "Static 微应用",
-      path: "/static"
-    }
+      title: "微应用",
+      path: "/static",
+    },
   ];
   // 判断是否有底部数据
-  footerShow = false
+  footerShow: Boolean = true;
+  navBarType:String = 'fixed'
+  created() {
+    axios.get('./setting.json').then(Response=>{
+      let {footerShow,navBarType} = Response.data;
+      console.log(Boolean(footerShow));
+      
+      this.footerShow = Boolean(footerShow);
+      this.navBarType = navBarType
+      
+    })
+  }
 }
 </script>
 
@@ -110,7 +125,7 @@ export default class App extends Vue {
     width: 100%;
     height: calc(100vh - 50px);
     overflow: hidden;
-      // 左侧导航
+    // 左侧导航
     .cns-menu-left-wrapper {
       flex: 180px 0 0;
       height: 100%;
@@ -140,10 +155,10 @@ export default class App extends Vue {
   .cns-footer-wrapper {
     width: 100%;
     height: 20px;
-    background: #00f;
+    background: -webkit-gradient(linear, right top, left top, from(#4e92f5), to(#3469c6));
+    background: linear-gradient(-90deg, #4e92f5, #3469c6);
     overflow: hidden;
   }
-
 
   // .cns-menu-wrapper {
   //   position: fixed;
