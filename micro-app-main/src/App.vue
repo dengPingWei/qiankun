@@ -2,17 +2,22 @@
   <a-config-provider prefixCls="cns">
     <section id="cns-main-app">
       <section class="cns-header-wrapper">
-        <header-menu :menus="menus"></header-menu>
+        <header-menu :menus="menus"  @changeHiddenMenu="changeHiddenMenu" ></header-menu>
       </section>
+
       <section
         :class="[
           'cns-content-wrapper',
           { 'cns-content-wrapper-footer': footerShow },
         ]"
       >
+        <!-- 悬浮导航 -->
+        <section id="cns-main-hiddenMenus">
+          <hidden-menu :menus="menus" @setFtameDomList="setFtameDomList"  @changeHiddenMenu="changeHiddenMenu" v-if="navBarType!=='fixed'" v-show="hiddenMenusType" />
+        </section>
         <!-- 左侧导航 -->
-        <section class="cns-menu-left-wrapper">
-          <main-menu :menus="menus" @setFtameDomList="setFtameDomList"/>
+        <section class="cns-menu-left-wrapper" v-if="navBarType==='fixed'">
+          <main-menu :menus="menus" @setFtameDomList="setFtameDomList" />
         </section>
         <!-- 悬浮导航 -->
         <!-- <section class="cns-menu-wrapper">
@@ -24,7 +29,11 @@
           <!-- 子应用渲染区，用于挂载子应用节点 -->
           <section v-show="!$route.name" id="frame">
             <!-- <section id="VueMicroApp"></section> -->
-            <section v-for="item in ftameDomList" :key="item.key" :id="item.key"></section>
+            <section
+              v-for="item in ftameDomList"
+              :key="item.key"
+              :id="item.key"
+            ></section>
           </section>
         </section>
       </section>
@@ -40,10 +49,12 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 
 import MainMenu from "@/components/menu/index.vue";
 import HeaderMenu from "@/components/header/index.vue";
+import HiddenMenu from "@/components/hiddenMenu/index.vue";
 @Component({
   components: {
     MainMenu,
     HeaderMenu,
+    HiddenMenu,
   },
 })
 export default class App extends Vue {
@@ -58,18 +69,18 @@ export default class App extends Vue {
       key: "Home",
       title: "主页",
       path: "/",
-      isMicro: true
+      isMicro: true,
     },
     {
       key: "VueMicroApp",
       title: "子应用一",
       path: "/vue",
     },
-//     {
-//       key: "VueMicroAppList",
-//       title: "子应用二",
-//       path: "/vue/list",
-//     },
+    //     {
+    //       key: "VueMicroAppList",
+    //       title: "子应用二",
+    //       path: "/vue/list",
+    //     },
     {
       key: "ReactMicroApp",
       title: "子应用三",
@@ -102,33 +113,32 @@ export default class App extends Vue {
   ftameDomList = [];
   // 判断是否有底部数据
   footerShow: Boolean = true;
-  navBarType:String = 'fixed'
+  navBarType: String = "fixed";
+  hiddenMenusType:Boolean = false;
   created() {
-    axios.get('./setting.json').then(Response=>{
-      let {footerShow,navBarType} = Response.data;
-      console.log(Boolean(footerShow));
-      
+    axios.get("./setting.json").then((Response) => {
+      let { footerShow, navBarType } = Response.data;
       this.footerShow = Boolean(footerShow);
-      this.navBarType = navBarType
-      
-    })
+      this.navBarType = navBarType;
+    });
     if (!this.$route.name) {
       for (let i = 0; i < this.menus.length; i++) {
         const menu = this.menus[i];
         const { path } = menu;
         if (path === this.$route.path) {
-          shared.setAddHeaderNav(menu)
-          this.ftameDomList = shared.getHeaderNav()
-          break
+          shared.setAddHeaderNav(menu);
+          this.ftameDomList = shared.getHeaderNav();
+          break;
         }
       }
     }
   }
-  private setFtameDomList(
-    menus: []
-  ): void {
-    console.log('okokoko')
-    this.ftameDomList = menus
+  private setFtameDomList(menus: []): void {
+    console.log("okokoko");
+    this.ftameDomList = menus;
+  }
+  private changeHiddenMenu(){
+    this.hiddenMenusType = !this.hiddenMenusType
   }
 }
 </script>
@@ -181,14 +191,34 @@ export default class App extends Vue {
   .cns-footer-wrapper {
     width: 100%;
     height: 20px;
-    background: -webkit-gradient(linear, right top, left top, from(#4e92f5), to(#3469c6));
+    background: -webkit-gradient(
+      linear,
+      right top,
+      left top,
+      from(#4e92f5),
+      to(#3469c6)
+    );
     background: linear-gradient(-90deg, #4e92f5, #3469c6);
     overflow: hidden;
   }
   #frame {
     width: 100%;
     height: 100%;
-    background: rgb(196, 188, 188);
+
+  }
+  #cns-main-hiddenMenus {
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
+    position: fixed;
+    inset: 50px 0px 0px;
+    left: 0;
+    top: 50px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-out 0s, visibility 0.3s ease-out 0s;
+
   }
 }
 </style>

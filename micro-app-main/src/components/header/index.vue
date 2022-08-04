@@ -1,6 +1,6 @@
 <template>
   <div class="header-qk">
-    <div class="anticon">
+    <div class="anticon" @click="navIconClick">
       <img src="../../assets/vh-menu.png" alt="">
     </div>
     <div class="logo">
@@ -106,6 +106,10 @@ export default class HeaderMenu extends Vue {
     headerNav.splice(index, 1)
     shared.setHeaderNav(headerNav)
     this.menus = headerNav
+  }
+
+  private navIconClick(){
+    this.$emit('changeHiddenMenu')
   }
 }
 </script>
