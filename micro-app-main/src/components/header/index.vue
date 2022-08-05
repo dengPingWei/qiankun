@@ -37,7 +37,8 @@ type MenuItem = {
 type FrameListItem = {
   id: string,
   isUse: boolean,
-  name: string
+  name: string,
+  microApp: any
 }
 @Component({
   components: {
@@ -144,7 +145,6 @@ export default class HeaderMenu extends Vue {
    */
   private deleteMenu(index: number, item: MenuItem) {
     let headerNav = [ ...shared.getHeaderNav() ]
-    console.log(this.frameList)
     let activeItem:any = {},isHome = false
     if (item.key ===this.selectKey) {
       if(headerNav[index + 1]) {
@@ -176,6 +176,8 @@ export default class HeaderMenu extends Vue {
         if (key === item.name) {
           item.name = ''
           item.isUse = false
+          item.microApp.unmount()
+          item.microApp = {}
         }
       }
       return item

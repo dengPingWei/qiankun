@@ -43,7 +43,14 @@
 <script lang="ts">
 import axios from "axios";
 import shared from "@/shared";
-import startQiankun from "./micro";
+// import startQiankun from "./micro";
+import {
+  // registerMicroApps,
+  // addGlobalUncaughtErrorHandler,
+  // start,
+  loadMicroApp,
+  // initGlobalState,
+} from "qiankun";
 import config from "@/config";
 
 console.log(config);
@@ -62,7 +69,8 @@ import HiddenMenu from "@/components/hiddenMenu/index.vue";
 type FrameListItem = {
   id: string,
   isUse: boolean,
-  name: string
+  name: string,
+  microApp?: any
 }
 @Component({
   components: {
@@ -125,7 +133,7 @@ export default class App extends Vue {
   }
   // dom显示的index
   frameIdShow: string = '';
-  frameList = [
+  frameList: FrameListItem[] = [
     {
       id: 'frame0',
       isUse: false,
@@ -176,23 +184,27 @@ export default class App extends Vue {
     }
     this.$nextTick( () => {
       console.log('REACT_MICRO_APP',REACT_MICRO_APP, obj.id)
-      let appItem: any = []
+      let appItem: any = {}
       if (obj.name === 'VueMicroApp') {
-        appItem.push({
+        appItem = {
           name: "VueMicroApp",
           entry: VUE_MICRO_APP,
           container: '#' + obj.id,
-          activeRule: "/vue"
-        })
+          // activeRule: "/vue"
+        }
       } else {
-        appItem.push({
-          name: "ReactMicroApp",
+        appItem = {
+          name: "VueMicroApp2",
           entry: REACT_MICRO_APP,
           container: '#' + obj.id,
-          activeRule: "/react"
-        })
+          // activeRule: "/react"
+        }
       }
-      startQiankun(appItem)
+      // startQiankun(appItem)
+      this.frameList[index].microApp = loadMicroApp(
+        appItem,
+        { sandbox: { experimentalStyleIsolation: true } }
+      )
     })
  
     // console.log('this.frameList33333333333',registerMicroApps, addGlobalUncaughtErrorHandler,start,)

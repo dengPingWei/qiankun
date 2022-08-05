@@ -23,8 +23,8 @@
 </template>
 <script>
 // 引入 SharedModule
-import SharedModule from "@/shared";
-import { ApiGetUserInfo } from "@/apis";
+// import SharedModule from "@/shared";
+// import { ApiGetUserInfo } from "@/apis";
 
 export default {
   name: "Communication",

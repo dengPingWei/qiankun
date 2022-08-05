@@ -3,7 +3,7 @@ const packageName = require('./package.json').name;
 
 module.exports = {
   devServer: {
-    port: 10200,
+    port: 10201,
     disableHostCheck: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -18,10 +18,9 @@ module.exports = {
       }
     },
     output: {
-      library: "VueMicroApp",
+      library: "VueMicroApp2",
       libraryTarget: 'umd',
-      jsonpFunction: `webpackJsonp_${packageName}`,
+      jsonpFunction: `webpackJsonp_VueMicroApp2`,
     }
   }
-
 }

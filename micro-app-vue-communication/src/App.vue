@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="appapp">
      <a-menu :selectedKeys="[currentRoute]" mode="horizontal" theme="dark">
       <a-menu-item 
         v-for="(item) in menus" 
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: 'App',
+  name: 'Aappapppp',
 
   data() {
     return {

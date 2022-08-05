@@ -38,7 +38,7 @@ function render(props = {}) {
   instance = new Vue({
     router,
     render: (h) => h(App),
-  }).$mount("#app");
+  }).$mount("#appapp");
 }
 
 export async function bootstrap() {
