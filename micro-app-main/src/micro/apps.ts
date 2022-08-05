@@ -18,25 +18,25 @@ const apps = [
   {
     name: "ReactMicroApp",
     entry: REACT_MICRO_APP,
-    container: "#ReactMicroApp",
+    container: "#frame1",
     activeRule: "/react",
   },
   {
     name: "VueMicroApp",
     entry: VUE_MICRO_APP,
-    container: "#VueMicroApp",
+    container: "#frame2",
     activeRule: "/vue",
   },
   {
     name: "AngularMicroApp",
     entry: ANGULAR_MICRO_APP,
-    container: "#frame",
+    container: "#frame3",
     activeRule: "/angular",
   },
   {
     name: "StaticMicroApp",
     entry: STATIC_MICRO_APP,
-    container: "#frame",
+    container: "#frame4",
     activeRule: "/static",
   },
 ];

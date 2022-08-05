@@ -2,6 +2,7 @@ import { createStore } from "redux";
 
 export type State = {
   token?: string;
+  headerNavList?: any;
 };
 
 type Action = {
@@ -9,7 +10,7 @@ type Action = {
   payload: any;
 };
 
-const reducer = (state: State = {}, action: Action = []): State => {
+const reducer = (state: State = {}, action: Action): State => {
   switch (action.type) {
     default:
       return state;

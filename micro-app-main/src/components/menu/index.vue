@@ -27,11 +27,18 @@ type MenuItem = {
   isMicro?: boolean;
   children?: MenuItem[];
 };
-
+type FrameListItem = {
+  id: string,
+  isUse: boolean,
+  name: string
+}
 @Component
 export default class Menu extends Vue {
   @Prop({ type: Array, default: [] })
   menus!: MenuItem[];
+
+  @Prop({ type: Array, default: [] })
+  frameList!: FrameListItem[];
 
   @Watch("$route.path")
   onPathChange() {
@@ -51,6 +58,7 @@ export default class Menu extends Vue {
     ) as MenuItem;
     if (!currentMenu) return;
     const { key } = currentMenu;
+    console.log(key,'currentMenu',currentMenu)
     this.selectKey = key;
   }
 
@@ -80,9 +88,49 @@ export default class Menu extends Vue {
     this.selectKey = key;
     if (path !== '/') {
       shared.setAddHeaderNav(item)
-      this.$emit('setFtameDomList');
+      let frameActiveIndex = this.frameList.findIndex(obj => obj.name === key)
+      // 判断是否在已有的Dom中
+      if (frameActiveIndex > -1) {
+        this.$emit('setFrameIdShow', this.frameList[frameActiveIndex].id)
+      } else {
+        const frameObj: any  = this.getFrameListIndex(key)
+        this.$emit('setFrameDomList', frameObj.obj, frameObj.index);
+      }
     }
-     
+  }
+  private getFrameListIndex(key: string) {
+    let obj = {
+      ...this.frameList[0],
+      name: key
+    }
+    // 没有被占用的
+    let isUseFrameIndex = this.frameList.findIndex(obj => !obj.isUse)
+    // if(isUseFrameIndex > -1) {
+      obj = {
+        ...this.frameList[isUseFrameIndex],
+        isUse: true,
+        name: key
+      }
+      // if (isUseFrameIndex === this.frameList.length -1) {
+      //   this.$emit('addFrameList')
+      // }
+      return { obj, index: isUseFrameIndex }
+    // }
+    // } else {
+    //   // 替换最前面的
+    //   const headerNav = shared.getHeaderNav()
+    //   for (let i=0; i< headerNav.length; i++) {
+    //     let index = this.frameList.findIndex(obj => obj.name === headerNav[i].key)
+    //     if (index > -1) {
+    //       let obj = {
+    //         ...this.frameList[index],
+    //         isUse: true,
+    //         name: key
+    //       }
+    //       return { obj, index }
+    //     }
+    //   }
+    // }
   }
 }
 </script>

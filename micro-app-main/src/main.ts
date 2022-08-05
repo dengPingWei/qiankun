@@ -4,7 +4,8 @@ import VueRouter from "vue-router";
 
 import App from "./App.vue";
 import routes from "./routes";
-import startQiankun from "./micro";
+// import startQiankun from "./micro";
+
 import "./assets/styles/locale.antd.css";
 
 Vue.use(VueRouter);
@@ -15,7 +16,7 @@ Vue.config.productionTip = false;
 // 如果没有 Angular 微应用，请删除这行代码
 import "zone.js/dist/zone";
 
-startQiankun();
+// startQiankun();
 
 /**
  * 注册路由实例

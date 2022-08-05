@@ -2,9 +2,8 @@
   <a-config-provider prefixCls="cns">
     <section id="cns-main-app">
       <section class="cns-header-wrapper">
-        <header-menu :menus="menus"  @changeHiddenMenu="changeHiddenMenu" ></header-menu>
+        <header-menu :menus="menus" @setFrameDomList="setFrameDomList" @setFrameIdShow="setFrameIdShow"  @changeHiddenMenu="changeHiddenMenu" :frameList="frameList"></header-menu>
       </section>
-
       <section
         :class="[
           'cns-content-wrapper',
@@ -12,29 +11,28 @@
         ]"
       >
         <!-- 悬浮导航 -->
-        <section id="cns-main-hiddenMenus">
-          <hidden-menu :menus="menus" @setFtameDomList="setFtameDomList"  @changeHiddenMenu="changeHiddenMenu" v-if="navBarType!=='fixed'" v-show="hiddenMenusType" />
+        <section id="cns-main-hiddenMenus" v-if="navBarType!=='fixed'">
+          <hidden-menu :menus="menus" @setFrameDomList="setFrameDomList"  @changeHiddenMenu="changeHiddenMenu" v-show="hiddenMenusType" />
         </section>
         <!-- 左侧导航 -->
         <section class="cns-menu-left-wrapper" v-if="navBarType==='fixed'">
-          <main-menu :menus="menus" @setFtameDomList="setFtameDomList" />
+          <main-menu :menus="menus" @setFrameDomList="setFrameDomList" @setFrameIdShow="setFrameIdShow" :frameList="frameList"/>
         </section>
-        <!-- 悬浮导航 -->
-        <!-- <section class="cns-menu-wrapper">
-          <main-menu :menus="menus" />
-        </section> -->
+      <!-- 悬浮导航 -->
+      <!-- <section class="cns-menu-wrapper">
+        <main-menu :menus="menus" />
+      </section> -->
         <section class="cns-frame-wrapper">
           <!-- 主应用渲染区，用于挂载主应用路由触发的组件 -->
           <router-view v-show="$route.name" />
           <!-- 子应用渲染区，用于挂载子应用节点 -->
           <section v-show="!$route.name" id="frame">
+            {{ frameIdShow }}
             <!-- <section id="VueMicroApp"></section> -->
-            <section
-              v-for="item in ftameDomList"
-              :key="item.key"
-              :id="item.key"
-            ></section>
-          </section>
+            <section v-for="item,index in frameList" :key="item.id" :id="item.id" v-show="frameIdShow === item.id">
+              {{ index }}
+            </section>
+          </section> 
         </section>
       </section>
       <section v-if="footerShow" class="cns-footer-wrapper">底部</section>
@@ -45,11 +43,27 @@
 <script lang="ts">
 import axios from "axios";
 import shared from "@/shared";
+import startQiankun from "./micro";
+import config from "@/config";
+
+console.log(config);
+const {
+  REACT_MICRO_APP,
+  VUE_MICRO_APP,
+  // ANGULAR_MICRO_APP,
+  // STATIC_MICRO_APP,
+} = config;
+console.log(REACT_MICRO_APP, VUE_MICRO_APP,)
 import { Component, Vue, Watch } from "vue-property-decorator";
 
 import MainMenu from "@/components/menu/index.vue";
 import HeaderMenu from "@/components/header/index.vue";
 import HiddenMenu from "@/components/hiddenMenu/index.vue";
+type FrameListItem = {
+  id: string,
+  isUse: boolean,
+  name: string
+}
 @Component({
   components: {
     MainMenu,
@@ -109,8 +123,15 @@ export default class App extends Vue {
     //   console.log('appppppppp', shared.getHeaderNav())
     // }, 0)
   }
-  // dom
-  ftameDomList = [];
+  // dom显示的index
+  frameIdShow: string = '';
+  frameList = [
+    {
+      id: 'frame0',
+      isUse: false,
+      name: ''
+    }
+  ]
   // 判断是否有底部数据
   footerShow: Boolean = true;
   navBarType: String = "fixed";
@@ -126,19 +147,60 @@ export default class App extends Vue {
         const menu = this.menus[i];
         const { path } = menu;
         if (path === this.$route.path) {
-          shared.setAddHeaderNav(menu);
-          this.ftameDomList = shared.getHeaderNav();
-          break;
+          shared.setAddHeaderNav(menu)
+          // this.ftameDomList = shared.getHeaderNav()
+          break
         }
       }
     }
   }
-  private setFtameDomList(menus: []): void {
-    console.log("okokoko");
-    this.ftameDomList = menus;
-  }
   private changeHiddenMenu(){
     this.hiddenMenusType = !this.hiddenMenusType
+  }
+  private addFrameList () {
+     this.frameList.push({
+      id: 'frame' + this.frameList.length,
+      isUse: false,
+      name: ''
+    })
+  }
+  private setFrameDomList(
+    obj: FrameListItem,
+    index: number
+  ): void {
+    this.frameIdShow = obj.id
+    this.frameList[index] = obj
+    let isUseFrameIndex = this.frameList.findIndex(obj => !obj.isUse)
+    if (isUseFrameIndex === -1) {
+      this.addFrameList()
+    }
+    this.$nextTick( () => {
+      console.log('REACT_MICRO_APP',REACT_MICRO_APP, obj.id)
+      let appItem: any = []
+      if (obj.name === 'VueMicroApp') {
+        appItem.push({
+          name: "VueMicroApp",
+          entry: VUE_MICRO_APP,
+          container: '#' + obj.id,
+          activeRule: "/vue"
+        })
+      } else {
+        appItem.push({
+          name: "ReactMicroApp",
+          entry: REACT_MICRO_APP,
+          container: '#' + obj.id,
+          activeRule: "/react"
+        })
+      }
+      startQiankun(appItem)
+    })
+ 
+    // console.log('this.frameList33333333333',registerMicroApps, addGlobalUncaughtErrorHandler,start,)
+  }
+  private setFrameIdShow(
+    name: string
+  ): void {
+    this.frameIdShow = name
   }
 }
 </script>
@@ -204,21 +266,16 @@ export default class App extends Vue {
   #frame {
     width: 100%;
     height: 100%;
-
+    section {
+      width: 100%;
+      height: 100%;
+    }
   }
   #cns-main-hiddenMenus {
-    width: 100%;
-    height: 100%;
-
-    z-index: 1;
+    z-index: 30;
     position: fixed;
-    inset: 50px 0px 0px;
     left: 0;
     top: 50px;
-    opacity: 1;
-    visibility: visible;
-    transition: opacity 0.3s ease-out 0s, visibility 0.3s ease-out 0s;
-
   }
 }
 </style>

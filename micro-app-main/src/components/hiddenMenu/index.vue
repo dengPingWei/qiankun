@@ -92,7 +92,7 @@ export default class Hiddenmenu extends Vue {
     this.selectKey = key;
     if (path !== "/") {
       shared.setAddHeaderNav(item);
-      this.$emit("setFtameDomList");
+      this.$emit("setFrameDomList");
     }
   }
 
@@ -104,8 +104,8 @@ export default class Hiddenmenu extends Vue {
 
 <style lang="less" scoped>
 .cns-main-menu {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: calc(100pvh - 50px);
   //  background: -webkit-gradient(linear, right top, left top, from(#4e92f5), to(#3469c6));
   //   background: linear-gradient(-90deg, #4e92f5, #3469c6);
   inset: 50px 0px 0px;
