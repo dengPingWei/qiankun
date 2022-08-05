@@ -1,8 +1,15 @@
 <template>
-  <section style="padding: 20px; color: red;">Vue App</section>
+  <section style="padding: 20px; color: red;">
+     <input type="text" v-model="val">
+  </section>
 </template>
 <script>
 export default {
-  name: "Home"
+  name: "Home",
+  data() {
+    return {
+      val: '11'
+    }
+  }
 }
 </script>
