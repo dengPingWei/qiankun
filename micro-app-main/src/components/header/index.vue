@@ -32,6 +32,7 @@ type MenuItem = {
   title: string;
   icon?: string;
   path: string;
+  entry: string;
   children?: MenuItem[];
 };
 type FrameListItem = {
@@ -73,8 +74,6 @@ export default class HeaderMenu extends Vue {
     }
     const { path } = currentMenu;
     this.selectKey = path;
-    console.log(currentMenu)
-    // this.setFrameDomList(currentMenu.key)
   }
 
   private _findCurrentMenu(
@@ -115,10 +114,11 @@ export default class HeaderMenu extends Vue {
     if (frameActiveIndex > -1) {
       this.$emit('setFrameIdShow', this.frameList[frameActiveIndex].id)
     } else {
-      this.setFrameDomList(key)
+      this.setFrameDomList(item)
     }
   }
-  private setFrameDomList (key: string) {
+  private setFrameDomList (item: MenuItem) {
+    let { key, entry } = item
     const headerNav = getHeaderNav()
     // 先找没有占用dom
     let isUseFrameIndex = this.frameList.findIndex(obj => !obj.isUse)
@@ -126,7 +126,8 @@ export default class HeaderMenu extends Vue {
       let obj = {
         ...this.frameList[isUseFrameIndex],
         isUse: true,
-        name: key
+        name: key,
+        entry,
       }
       this.$emit('setFrameDomList', obj, isUseFrameIndex)
     } else {
@@ -136,7 +137,8 @@ export default class HeaderMenu extends Vue {
           let obj = {
             ...this.frameList[frameIndex],
             isUse: true,
-            name: key
+            name: key,
+            entry,
           }
           this.$emit('setFrameDomList', obj, frameIndex)
           break

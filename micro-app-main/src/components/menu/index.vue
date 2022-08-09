@@ -113,7 +113,7 @@ export default class Menu extends Vue {
       if (frameActiveIndex > -1) {
         this.$emit('setFrameIdShow', this.frameList[frameActiveIndex].id)
       } else {
-        const frameObj: any  = this.getFrameListIndex(key)
+        const frameObj: any  = this.getFrameListIndex(item)
         this.$emit('setFrameDomList', frameObj.obj, frameObj.index);
       }
     }
@@ -125,10 +125,12 @@ export default class Menu extends Vue {
       this.openKeys = item.key
     }
   }
-  private getFrameListIndex(key: string) {
+  private getFrameListIndex(item: any) {
+    const { key, entry } = item;
     let obj = {
       ...this.frameList[0],
-      name: key
+      name: key,
+      entry,
     }
     // 没有被占用的
     let isUseFrameIndex = this.frameList.findIndex(obj => !obj.isUse)
@@ -136,7 +138,8 @@ export default class Menu extends Vue {
       obj = {
         ...this.frameList[isUseFrameIndex],
         isUse: true,
-        name: key
+        name: key,
+        entry,
       }
       // if (isUseFrameIndex === this.frameList.length -1) {
       //   this.$emit('addFrameList')

@@ -72,7 +72,9 @@ type FrameListItem = {
   id: string,
   isUse: boolean,
   name: string,
-  microApp?: any
+  entry: string,
+  microApp?: any,
+ 
 }
 @Component({
   components: {
@@ -105,12 +107,14 @@ export default class App extends Vue {
           key: "VueMicroApp",
           title: "主页",
           path: "/vue",
+          entry: 'http://localhost:10200'
         },
         {
           parent: 'VueMicroApp',
           key: "VueMicroApp",
           title: "列表页",
           path: "/vue/list",
+          entry: 'http://localhost:10200'
         },
       ]
     },
@@ -124,18 +128,21 @@ export default class App extends Vue {
           key: "VueMicroApp2",
           title: "主页",
           path: "/vue2",
+          entry: 'http://localhost:10201'
         },
         {
           parent: 'VueMicroApp2',
           key: "VueMicroApp2",
           title: "列表页",
           path: "/vue2/list",
+          entry: 'http://localhost:10201'
         },
         {
           parent: 'VueMicroApp2',
           key: "VueMicroApp2",
           title: "通信页",
           path: "/vue2/communication",
+          entry: 'http://localhost:10201'
         },
       ]
     },
@@ -168,7 +175,8 @@ export default class App extends Vue {
     {
       id: 'frame0',
       isUse: false,
-      name: ''
+      name: '',
+      entry: ''
     }
   ]
   // 判断是否有底部数据
@@ -194,12 +202,13 @@ export default class App extends Vue {
     }
     this.$nextTick(() => {
       const headerNav = getHeaderNav()
-      let activeNav = headerNav.filter((item: { path: string; }) => item.path = this.$route.path)
+      let activeNav = headerNav.filter((item: { path: string; }) => item.path == this.$route.path)
       if (activeNav.length > 0) {
         let obj = {
           ...this.frameList[0],
           isUse: true,
-          name: activeNav[0].key
+          name: activeNav[0].key,
+          entry: activeNav[0].entry,
         }
         this.setFrameDomList(obj, 0)
       }
@@ -212,7 +221,8 @@ export default class App extends Vue {
      this.frameList.push({
       id: 'frame' + this.frameList.length,
       isUse: false,
-      name: ''
+      name: '',
+      entry: '',
     })
   }
   private setFrameDomList(
@@ -227,21 +237,21 @@ export default class App extends Vue {
     }
     this.$nextTick( () => {
       let appItem: any = {}
-      if (obj.name === 'VueMicroApp') {
+      // if (obj.name === 'VueMicroApp') {
         appItem = {
-          name: "VueMicroApp",
-          entry: VUE_MICRO_APP,
+          name: obj.name,
+          entry: obj.entry,
           container: '#' + obj.id,
           // activeRule: "/vue"
         }
-      } else {
-        appItem = {
-          name: "VueMicroApp2",
-          entry: REACT_MICRO_APP,
-          container: '#' + obj.id,
-          // activeRule: "/react"
-        }
-      }
+      // } else {
+      //   appItem = {
+      //     name: "VueMicroApp2",
+      //     entry: REACT_MICRO_APP,
+      //     container: '#' + obj.id,
+      //     // activeRule: "/react"
+      //   }
+      // }
       this.frameList[index].microApp = loadMicroApp(
         appItem,
         { sandbox: { experimentalStyleIsolation: true } }
