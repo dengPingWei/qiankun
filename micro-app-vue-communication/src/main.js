@@ -29,7 +29,7 @@ function render(props = {}) {
   SharedModule.overloadShared(shared);
 
   router = new VueRouter({
-    base: window.__POWERED_BY_QIANKUN__ ? "/vue" : "/",
+    base: window.__POWERED_BY_QIANKUN__ ? "/vue2" : "/",
     mode: "history",
     routes,
   });

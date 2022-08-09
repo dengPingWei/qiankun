@@ -1,34 +1,24 @@
 <template>
   <section class="cns-main-menu">
     <a-menu
-      :openKeys="[openKeys]"
-      :selectedKeys="[selectKey]"
       mode="inline"
+      theme="dark"
+      :selectedKeys="[selectKey]"
+      :openKeys="openKeys"
+      style='background:linear-gradient(-90deg, #4e92f5, #3469c6)'
     >
-      <template v-for="item in menus">
-        <a-menu-item v-if="!item.children" :key="item.path" @click="changeMenu(item)">
-          <router-link :to="{path: item.path }">
-            <a-icon v-if="item.icon" :type="item.icon" />
-            <span>{{ item.title }}</span>
-          </router-link>
-        </a-menu-item>
-        <a-sub-menu v-else :key="item.key" @titleClick="changeSubMenu">
-          <template #title>{{ item.title }}</template>
-          <a-menu-item v-for="chilItem in item.children" :key="chilItem.path" @click="changeMenu(chilItem)">
-            <router-link :to="{path: chilItem.path }">
-              <a-icon v-if="chilItem.icon" :type="chilItem.icon" />
-              <span>{{ chilItem.title }}</span>
-            </router-link>
-          </a-menu-item>
-        </a-sub-menu>
-      </template>
+   
+      <!-- <a-menu-item v-for="item in menus" :key="item.key" @click="changeMenu(item)">
+        <router-link :to="{path: item.path }">
+          <a-icon v-if="item.icon" :type="item.icon" />
+          <span>{{item.title}}</span>
+        </router-link>
+      </a-menu-item> -->
     </a-menu>
-  
   </section>
 </template>
 
 <script lang="ts">
-import subMenu from "./subMenu.vue";
 import { setAddHeaderNav } from "@/utils/sessionStorageGetSet.ts";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
@@ -38,7 +28,6 @@ type MenuItem = {
   icon?: string;
   path: string;
   isMicro?: boolean;
-  parent?: string,
   children?: MenuItem[];
 };
 type FrameListItem = {
@@ -46,12 +35,7 @@ type FrameListItem = {
   isUse: boolean,
   name: string
 }
-@Component({
-  components: {
-    subMenu,
-    Menu
-  }
-})
+@Component
 export default class Menu extends Vue {
   @Prop({ type: Array, default: [] })
   menus!: MenuItem[];
@@ -63,21 +47,24 @@ export default class Menu extends Vue {
   onPathChange() {
     this._initMenus();
   }
-  selectKey: string = '';
-  openKeys: string = '';
+
+  selectKey: string = "";
+  openKeys: any = [];
   created() {
     this._initMenus();
   }
+private titleClick = (e: Event) => {
+    console.log('titleClick', e);
+  };
   private _initMenus() {
     const currentMenu = this._findCurrentMenu(
       this.menus,
       this.$route.path
     ) as MenuItem;
     if (!currentMenu) return;
-    if(this.selectKey == this.$route.path) return
-    const { path,parent = '' } = currentMenu;
-    this.selectKey = path;
-    this.openKeys = parent || this.openKeys;
+    const { key } = currentMenu;
+    console.log(key,'currentMenu',currentMenu,this.$route.path)
+    this.selectKey = key;
   }
 
   private _findCurrentMenu(
@@ -101,13 +88,11 @@ export default class Menu extends Vue {
   /**
    * 切换菜单
    */
-  // private changeMenu(item: MenuItem) {
-   private changeMenu(item: any) {
+  private changeMenu(item: MenuItem) {
     const { key, path } = item;
-    this.selectKey = path;
+    this.selectKey = key;
     if (path !== '/') {
       setAddHeaderNav(item)
-      console.log(this.frameList)
       let frameActiveIndex = this.frameList.findIndex(obj => obj.name === key)
       // 判断是否在已有的Dom中
       if (frameActiveIndex > -1) {
@@ -116,13 +101,6 @@ export default class Menu extends Vue {
         const frameObj: any  = this.getFrameListIndex(key)
         this.$emit('setFrameDomList', frameObj.obj, frameObj.index);
       }
-    }
-  }
-  private changeSubMenu (item: any) {
-    if(item.key === this.openKeys ) {
-       this.openKeys = "" 
-    } else {
-      this.openKeys = item.key
     }
   }
   private getFrameListIndex(key: string) {
@@ -166,16 +144,15 @@ export default class Menu extends Vue {
 .cns-main-menu {
   width: 100%;
   height: 100%;
-  border-right: 1px solid #e8e8e8;
-  // background: -webkit-gradient(linear, right top, left top, from(#4e92f5), to(#3469c6));
-  // background: linear-gradient(-90deg, #4e92f5, #3469c6);
+   background: -webkit-gradient(linear, right top, left top, from(#4e92f5), to(#3469c6));
+    background: linear-gradient(-90deg, #4e92f5, #3469c6);
   .cns-menu {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
     a {
-      // color: #fff;
+      color: #fff;
       text-decoration: none;
     }
   }
@@ -190,8 +167,8 @@ export default class Menu extends Vue {
   .cns-child-title:hover {
     color: #408fff;
   }
-  /deep/ .cns-menu-inline {
-    border-right: none;
+  /deep/ .cns-menu-sub {
+    background: rgb(12, 28, 53);
   }
 }
 </style>

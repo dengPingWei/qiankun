@@ -28,7 +28,8 @@
 </template>
 
 <script lang="ts">
-import shared from "@/shared";
+// import shared from "@/shared";
+import { setAddHeaderNav } from "@/utils/sessionStorageGetSet.ts";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
 type MenuItem = {
@@ -91,7 +92,8 @@ export default class Hiddenmenu extends Vue {
     const { key, path } = item;
     this.selectKey = key;
     if (path !== "/") {
-      shared.setAddHeaderNav(item);
+      console.log('222222222222222222')
+      setAddHeaderNav(item);
       this.$emit("setFrameDomList");
     }
   }

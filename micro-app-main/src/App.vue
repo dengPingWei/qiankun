@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
-import shared from "@/shared";
+// import axios from "axios";
+// import shared from "@/shared";
 // import startQiankun from "./micro";
 import {
   // registerMicroApps,
@@ -66,6 +66,8 @@ import { Component, Vue, Watch } from "vue-property-decorator";
 import MainMenu from "@/components/menu/index.vue";
 import HeaderMenu from "@/components/header/index.vue";
 import HiddenMenu from "@/components/hiddenMenu/index.vue";
+import { setAddHeaderNav,getHeaderNav } from "@/utils/sessionStorageGetSet.ts";
+
 type FrameListItem = {
   id: string,
   isUse: boolean,
@@ -97,16 +99,45 @@ export default class App extends Vue {
       key: "VueMicroApp",
       title: "子应用一",
       path: "/vue",
+      children: [
+        {
+          parent: 'VueMicroApp',
+          key: "VueMicroApp",
+          title: "主页",
+          path: "/vue",
+        },
+        {
+          parent: 'VueMicroApp',
+          key: "VueMicroApp",
+          title: "列表页",
+          path: "/vue/list",
+        },
+      ]
     },
-    //     {
-    //       key: "VueMicroAppList",
-    //       title: "子应用二",
-    //       path: "/vue/list",
-    //     },
     {
-      key: "ReactMicroApp",
+      key: "VueMicroApp2",
       title: "子应用三",
-      path: "/react",
+      path: "/vue2",
+      children: [
+        {
+          parent: 'VueMicroApp2',
+          key: "VueMicroApp2",
+          title: "主页",
+          path: "/vue2",
+        },
+        {
+          parent: 'VueMicroApp2',
+          key: "VueMicroApp2",
+          title: "列表页",
+          path: "/vue2/list",
+        },
+        {
+          parent: 'VueMicroApp2',
+          key: "VueMicroApp2",
+          title: "通信页",
+          path: "/vue2/communication",
+        },
+      ]
     },
     {
       key: "AngularMicroApp",
@@ -141,26 +172,38 @@ export default class App extends Vue {
     }
   ]
   // 判断是否有底部数据
-  footerShow: Boolean = true;
+  footerShow: Boolean = false;
   navBarType: String = "fixed";
   hiddenMenusType:Boolean = false;
   created() {
-    axios.get("./setting.json").then((Response) => {
-      let { footerShow, navBarType } = Response.data;
-      this.footerShow = Boolean(footerShow);
-      this.navBarType = navBarType;
-    });
+    // axios.get("./setting.json").then((Response) => {
+    //   let { footerShow, navBarType } = Response.data;
+    //   this.footerShow = Boolean(footerShow);
+    //   this.navBarType = navBarType;
+    // });
     if (!this.$route.name) {
       for (let i = 0; i < this.menus.length; i++) {
         const menu = this.menus[i];
         const { path } = menu;
         if (path === this.$route.path) {
-          shared.setAddHeaderNav(menu)
-          // this.ftameDomList = shared.getHeaderNav()
+          console.log(menu)
+          setAddHeaderNav(menu)
           break
         }
       }
     }
+    this.$nextTick(() => {
+      const headerNav = getHeaderNav()
+      let activeNav = headerNav.filter((item: { path: string; }) => item.path = this.$route.path)
+      if (activeNav.length > 0) {
+        let obj = {
+          ...this.frameList[0],
+          isUse: true,
+          name: activeNav[0].key
+        }
+        this.setFrameDomList(obj, 0)
+      }
+    })
   }
   private changeHiddenMenu(){
     this.hiddenMenusType = !this.hiddenMenusType
@@ -183,7 +226,6 @@ export default class App extends Vue {
       this.addFrameList()
     }
     this.$nextTick( () => {
-      console.log('REACT_MICRO_APP',REACT_MICRO_APP, obj.id)
       let appItem: any = {}
       if (obj.name === 'VueMicroApp') {
         appItem = {
@@ -200,14 +242,11 @@ export default class App extends Vue {
           // activeRule: "/react"
         }
       }
-      // startQiankun(appItem)
       this.frameList[index].microApp = loadMicroApp(
         appItem,
         { sandbox: { experimentalStyleIsolation: true } }
       )
     })
- 
-    // console.log('this.frameList33333333333',registerMicroApps, addGlobalUncaughtErrorHandler,start,)
   }
   private setFrameIdShow(
     name: string
