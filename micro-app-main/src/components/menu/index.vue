@@ -4,6 +4,7 @@
       :openKeys="[openKeys]"
       :selectedKeys="[selectKey]"
       mode="inline"
+      class="menuList"
     >
       <template v-for="item in menus">
         <a-menu-item v-if="!item.children" :key="item.path" @click="changeMenu(item)">
@@ -23,7 +24,9 @@
         </a-sub-menu>
       </template>
     </a-menu>
-  
+    <div class="footer">
+      <MenuFooter/>
+    </div> 
   </section>
 </template>
 
@@ -31,6 +34,7 @@
 import subMenu from "./subMenu.vue";
 import { setAddHeaderNav } from "@/utils/sessionStorageGetSet.ts";
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import MenuFooter from "@/components/menuFooter/index.vue";
 
 type MenuItem = {
   key: string;
@@ -49,7 +53,8 @@ type FrameListItem = {
 @Component({
   components: {
     subMenu,
-    Menu
+    Menu,
+    MenuFooter
   }
 })
 export default class Menu extends Vue {
@@ -134,39 +139,21 @@ export default class Menu extends Vue {
     }
     // 没有被占用的
     let isUseFrameIndex = this.frameList.findIndex(obj => !obj.isUse)
-    // if(isUseFrameIndex > -1) {
-      obj = {
-        ...this.frameList[isUseFrameIndex],
-        isUse: true,
-        name: key,
-        entry,
-      }
-      // if (isUseFrameIndex === this.frameList.length -1) {
-      //   this.$emit('addFrameList')
-      // }
-      return { obj, index: isUseFrameIndex }
-    // }
-    // } else {
-    //   // 替换最前面的
-    //   const headerNav = shared.getHeaderNav()
-    //   for (let i=0; i< headerNav.length; i++) {
-    //     let index = this.frameList.findIndex(obj => obj.name === headerNav[i].key)
-    //     if (index > -1) {
-    //       let obj = {
-    //         ...this.frameList[index],
-    //         isUse: true,
-    //         name: key
-    //       }
-    //       return { obj, index }
-    //     }
-    //   }
-    // }
+    obj = {
+      ...this.frameList[isUseFrameIndex],
+      isUse: true,
+      name: key,
+      entry,
+    }
+    return { obj, index: isUseFrameIndex }
   }
 }
 </script>
 
 <style lang="less" scoped>
 .cns-main-menu {
+  position: relative;
+  padding-bottom: 25px;
   width: 100%;
   height: 100%;
   border-right: 1px solid #e8e8e8;
@@ -177,6 +164,24 @@ export default class Menu extends Vue {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      /*滚动条整体样式*/
+      width: 4px;
+      height: 4px;
+      background: #fff;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: none;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      /*滚动条里面小方块*/
+      border-radius: 3px;
+      background-color: #d9d9d9;
+    }
     a {
       // color: #fff;
       text-decoration: none;
@@ -193,8 +198,18 @@ export default class Menu extends Vue {
   .cns-child-title:hover {
     color: #408fff;
   }
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 25px;
+  }
   /deep/ .cns-menu-inline {
     border-right: none;
+  }
+  /deep/.cns-menu-inline .cns-menu-item,
+  /deep/.cns-menu-inline .cns-menu-submenu-title {
+    width: 100%;
   }
 }
 </style>

@@ -3,76 +3,71 @@
     <section id="cns-main-app">
       <!-- <router-view /> -->
       <section class="cns-header-wrapper">
-        <header-menu
-          :menus="menus"
-          @setFrameDomList="setFrameDomList"
-          @setFrameIdShow="setFrameIdShow"
-          @changeHiddenMenu="changeHiddenMenu"
-          :frameList="frameList">
-        </header-menu>
+        <header-menu :menus="menus" @setFrameDomList="setFrameDomList" @setFrameIdShow="setFrameIdShow"  @changeHiddenMenu="changeHiddenMenu" :frameList="frameList"></header-menu>
       </section>
-      <!-- <section
+      <section
         :class="[
           'cns-content-wrapper',
-          { 'cns-content-wrapper-footer': footerShow && navBarType !== 'fixed' },
+          { 'cns-content-wrapper-footer': footerShow },
         ]"
-      > -->
-      <section class="cns-content-wrapper">
+      >
         <!-- 悬浮导航 -->
         <section id="cns-main-hiddenMenus" v-if="navBarType!=='fixed'">
-          <hidden-menu
-          :menus="menus"
-          @setFrameDomList="setFrameDomList"
-          @setFrameIdShow="setFrameIdShow"
-          @changeHiddenMenu="changeHiddenMenu"
-          v-show="hiddenMenusType"
-          :frameList="frameList"
-        />
+          <hidden-menu :menus="menus" @setFrameDomList="setFrameDomList"  @changeHiddenMenu="changeHiddenMenu" v-show="hiddenMenusType" />
         </section>
         <!-- 左侧导航 -->
-        <section class="cns-menu-left-wrapper" v-if="navBarType === 'fixed'">
-          <main-menu
-            :menus="menus"
-            @setFrameDomList="setFrameDomList"
-            @setFrameIdShow="setFrameIdShow"
-            :frameList="frameList"
-          />
+        <section class="cns-menu-left-wrapper" v-if="navBarType==='fixed'">
+          <main-menu :menus="menus" @setFrameDomList="setFrameDomList" @setFrameIdShow="setFrameIdShow" :frameList="frameList"/>
         </section>
+      <!-- 悬浮导航 -->
+      <!-- <section class="cns-menu-wrapper">
+        <main-menu :menus="menus" />
+      </section> -->
         <section class="cns-frame-wrapper">
-          <section :class="[{ 'cns-content-wrapper-footer': footerShow}]">
-            <!-- 主应用渲染区，用于挂载主应用路由触发的组件 -->
-            <router-view v-show="$route.name" />
-            <!-- 子应用渲染区，用于挂载子应用节点 -->
-            <section v-show="!$route.name" id="frame">
-              <!-- <section id="VueMicroApp"></section> -->
-              <section v-for="item in frameList" :key="item.id" :id="item.id" v-show="frameIdShow === item.id">
-              </section>
+          <!-- 主应用渲染区，用于挂载主应用路由触发的组件 -->
+          {{ $route.name }}
+          <router-view v-show="$route.name" />
+          <!-- 子应用渲染区，用于挂载子应用节点 -->
+          <section v-show="!$route.name" id="frame">
+            <!-- <section id="VueMicroApp"></section> -->
+            <section v-for="item in frameList" :key="item.id" :id="item.id" v-show="frameIdShow === item.id">
             </section>
-          </section>
-          <section v-if="footerShow" class="cns-footer-wrapper">
-            <footer-wrapper :pageInfo="footerPageInfo"></footer-wrapper>
           </section> 
         </section>
       </section>
-      <!-- <section v-if="footerShow && navBarType !=='fixed'" class="cns-footer-wrapper">
-        <footer-wrapper></footer-wrapper>
-      </section> -->
+      <section v-if="footerShow" class="cns-footer-wrapper">底部</section>
     </section>
   </a-config-provider>
 </template>
 
 <script lang="ts">
 // import axios from "axios";
-import shared from "@/shared";
-import {loadMicroApp,} from "qiankun";
+// import {getStateAll} from "@/shared";
+// import startQiankun from "./micro";
+import {
+  // registerMicroApps,
+  // addGlobalUncaughtErrorHandler,
+  // start,
+  loadMicroApp,
+  // initGlobalState,
+} from "qiankun";
+import config from "@/config";
+
+console.log(config);
+// const {
+//   REACT_MICRO_APP,
+//   VUE_MICRO_APP,
+//   // ANGULAR_MICRO_APP,
+//   // STATIC_MICRO_APP,
+// } = config;
+// console.log(REACT_MICRO_APP, VUE_MICRO_APP,)
 import { Component, Vue, Watch } from "vue-property-decorator";
+import actions from "@/shared/actions";
 
 import MainMenu from "@/components/menu/index.vue";
 import HeaderMenu from "@/components/header/index.vue";
 import HiddenMenu from "@/components/hiddenMenu/index.vue";
-import FooterWrapper from "@/components/footer/index.vue";
-import { setAddHeaderNav,getHeaderNav } from "@/utils/sessionStorageGetSet.ts";
-import { loginQuickly } from "@/apis";
+import { setAddHeaderNav, getHeaderNav } from "@/utils/sessionStorageGetSet.ts";
 
 type FrameListItem = {
   id: string,
@@ -82,17 +77,11 @@ type FrameListItem = {
   microApp?: any,
  
 }
-type FooterPageInfo = {
-  time?: string;
-  copy?: string;
-  zhangSet?: string
-};
 @Component({
   components: {
     MainMenu,
     HeaderMenu,
     HiddenMenu,
-    FooterWrapper,
   },
 })
 export default class App extends Vue {
@@ -110,32 +99,65 @@ export default class App extends Vue {
       isMicro: true,
     },
     // {
-    //   key: "VueMicroApp2",
-    //   title: "子应用三",
-    //   path: "/vue2",
+    //   key: "VueMicroApp",
+    //   title: "子应用一",
+    //   path: "/vue",
     //   children: [
     //     {
-    //       parent: 'VueMicroApp2',
-    //       key: "VueMicroApp2",
+    //       parent: 'VueMicroApp',
+    //       key: "VueMicroApp",
     //       title: "主页",
-    //       path: "/vue2",
-    //       entry: 'http://localhost:10201'
+    //       path: "/vue",
+    //       entry: 'http://localhost:10200'
     //     },
     //     {
-    //       parent: 'VueMicroApp2',
-    //       key: "VueMicroApp2",
+    //       parent: 'VueMicroApp',
+    //       key: "VueMicroApp",
     //       title: "列表页",
-    //       path: "/vue2/list",
-    //       entry: 'http://localhost:10201'
-    //     },
-    //     {
-    //       parent: 'VueMicroApp2',
-    //       key: "VueMicroApp2",
-    //       title: "通信页",
-    //       path: "/vue2/communication",
-    //       entry: 'http://localhost:10201'
+    //       path: "/vue/list",
+    //       entry: 'http://localhost:10200'
     //     },
     //   ]
+    // },
+    {
+      key: "VueMicroApp2",
+      title: "子应用三",
+      path: "/vue2",
+      children: [
+        {
+          parent: 'VueMicroApp2',
+          key: "VueMicroApp2",
+          title: "主页",
+          path: "/vue2",
+          entry: 'http://localhost:10201'
+        },
+        {
+          parent: 'VueMicroApp2',
+          key: "VueMicroApp2",
+          title: "列表页",
+          path: "/vue2/list",
+          entry: 'http://localhost:10201'
+        },
+        {
+          parent: 'VueMicroApp2',
+          key: "VueMicroApp2",
+          title: "通信页",
+          path: "/vue2/communication",
+          entry: 'http://localhost:10201'
+        },
+      ]
+    },
+    // {
+    //   key: "VueMicroApp3",
+    //   title: "子应用四",
+    //   path: "/vue3",
+    //   entry: "http://localhost:7105"
+    // },
+    // {
+    //   key: "ReactApp1",
+    //   title: "react",
+    //   path: "/react",
+    //   entry: "http://localhost:10100"
     // },
     {
       key: "ReactApp2",
@@ -257,11 +279,6 @@ export default class App extends Vue {
   footerShow: Boolean = false;
   navBarType: String = "fixed";
   hiddenMenusType:Boolean = false;
-  footerPageInfo: FooterPageInfo = {
-   time: new Date().getFullYear() + '.' +(new Date().getMonth()+1) + '.' + new Date().getDate(),
-   zhangSet: 'AT主账套',
-   copy: '望海康信（北京）科技股份公司版权所有©2020'
-  }
   created() {
     //  axios.get("/api/admin/user/search/?account=&roleCode=&type=&compCode=&deptCode=&pageNum=1&pageSize=100").then((Response) => {
     //   // let { footerShow, navBarType } = Response.data;
@@ -274,12 +291,12 @@ export default class App extends Vue {
     //   this.footerShow = Boolean(footerShow);
     //   this.navBarType = navBarType;
     // });
-    this.getInitData()
     if (!this.$route.name) {
       for (let i = 0; i < this.menus.length; i++) {
         const menu = this.menus[i];
         const { path } = menu;
         if (path === this.$route.path) {
+          console.log(menu)
           setAddHeaderNav(menu)
           break
         }
@@ -299,15 +316,7 @@ export default class App extends Vue {
       }
     })
   }
-  // 加载基础数据
-  private async getInitData () {
-    const result: any = await loginQuickly();
-    shared.setGlobal(result.global);
-    shared.setUser(result.user);
-    
-  }
-
-  changeHiddenMenu(){
+  private changeHiddenMenu(){
     this.hiddenMenusType = !this.hiddenMenusType
   }
   private addFrameList () {
@@ -318,7 +327,7 @@ export default class App extends Vue {
       entry: '',
     })
   }
-  setFrameDomList(
+  private setFrameDomList(
     obj: FrameListItem,
     index: number
   ): void {
@@ -330,22 +339,33 @@ export default class App extends Vue {
     }
     this.$nextTick( () => {
       let appItem: any = {}
-      appItem = {
-        name: obj.name,
-        entry: obj.entry,
-        container: '#' + obj.id,
-        props: {
-          store: shared.getStateAll()
+      // if (obj.name === 'VueMicroApp') {
+        appItem = {
+          name: obj.name,
+          entry: obj.entry,
+          container: '#' + obj.id,
+          props: {
+            id: '11111111111111111111',
+            name: '刘关张',
+            store: this
+          }
         }
-      }
-      // console.log(appItem,loadMicroApp)
+      // } else {
+      //   appItem = {
+      //     name: "VueMicroApp2",
+      //     entry: REACT_MICRO_APP,
+      //     container: '#' + obj.id,
+      //     // activeRule: "/react"
+      //   }
+      // }
+
       this.frameList[index].microApp = loadMicroApp(
         appItem,
         { sandbox: { experimentalStyleIsolation: true } }
       )
     })
   }
-  setFrameIdShow(
+  private setFrameIdShow(
     name: string
   ): void {
     this.frameIdShow = name
@@ -362,7 +382,7 @@ export default class App extends Vue {
   .cns-header-wrapper {
     width: 100%;
     height: 50px;
-    // overflow: hidden;
+    overflow: hidden;
   }
   // 主题
   .cns-content-wrapper {
@@ -391,7 +411,7 @@ export default class App extends Vue {
     .cns-frame-wrapper {
       flex: 1;
       height: 100%;
-      overflow: hidden;
+      overflow-y: auto;
     }
   }
   .cns-content-wrapper-footer {

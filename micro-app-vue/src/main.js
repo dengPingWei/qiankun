@@ -31,7 +31,7 @@ function render() {
   instance = new Vue({
     router,
     render: (h) => h(App),
-  }).$mount("#app");
+  }).$mount("#app1");
 }
 
 // 独立运行时，直接挂载应用

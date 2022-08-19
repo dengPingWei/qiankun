@@ -5,12 +5,14 @@ const instance = axios.create({
 });
 
 instance.interceptors.response.use(reply => reply.data);
-
+import data from './data.js'
 /**
  * 快速登录
  */
-export const ApiLoginQuickly = () => {
-  return instance.post("/member", {
-    query: "{ loginQuickly { token } }",
-  });
+export const loginQuickly = () => {
+  const promise = new Promise((resolve, reject) => {
+    const res = data
+    resolve(res)
+  })
+  return promise
 };

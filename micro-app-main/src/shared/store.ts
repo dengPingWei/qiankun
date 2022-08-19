@@ -3,6 +3,8 @@ import { createStore } from "redux";
 export type State = {
   token?: string;
   headerNavList?: any;
+  global?: any;
+  user?: any
 };
 
 type Action = {
@@ -19,6 +21,18 @@ const reducer = (state: State = {}, action: Action): State => {
       return {
         ...state,
         token: action.payload,
+      };
+    // 设置global
+    case "SET_GLOBAL":
+      return {
+        ...state,
+        global: action.payload,
+      };
+    // 设置user
+    case "SET_USER":
+      return {
+        ...state,
+        user: action.payload,
       };
     case "SET_HEADER_NAV":
       return {

@@ -1,11 +1,21 @@
 const path = require('path');
-
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
 module.exports = {
+  outputDir: 'dist',
+  assetsDir: 'static',
+  filenameHashing: true,
   devServer: {
+    hot: true,
     // 监听端口
     port: 10200,
     // 关闭主机检查，使微应用可以被 fetch
     disableHostCheck: true,
+    overlay: {
+      warnings: false,
+      errors: true,
+    },
     // 配置跨域请求头，解决开发环境的跨域问题
     headers: {
       'Access-Control-Allow-Origin': '*',
@@ -14,7 +24,7 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src'),
+        '@': resolve('src'),
       }
     },
     output: {

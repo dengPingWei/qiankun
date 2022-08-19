@@ -25,6 +25,7 @@ export function setAddHeaderNav(nav: MenuItem): void {
     }
   }
   if (!isThere) {
+    nav.width = nav.title.length * 14 + 16
     headerNav.push(nav)
     console.log('__atacct_portal_visit_',headerNav)
     sessionStorage.setItem("atacct_portal_visit",JSON.stringify(headerNav))

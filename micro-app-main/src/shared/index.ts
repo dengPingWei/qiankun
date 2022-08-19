@@ -25,6 +25,34 @@ class Shared {
       payload: token
     });
   }
+  /**
+   * 设置 Global
+   */
+   public setGlobal(global: any): void {
+    // 将 token 的值记录在 store 中
+    store.dispatch({
+      type: "SET_GLOBAL",
+      payload: global
+    });
+  }
+  /**
+   * 设置 User
+   */
+   public setUser(user: any): void {
+    // 将 token 的值记录在 store 中
+    store.dispatch({
+      type: "SET_USER",
+      payload: user
+    });
+  }
+ 
+  public getStateAll(): any {
+    const state = store.getState();
+    return {
+      user: state.user || {},
+      global: state.global || {},
+    }
+  }
   public getHeaderNav(): any {
     const state = store.getState();
     return state.headerNavList || "";
